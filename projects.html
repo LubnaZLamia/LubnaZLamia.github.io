@@ -3,8 +3,39 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Research Projects — Lubna Zahan Lamia</title>
+  <title>Software Projects — Lubna Zahan Lamia</title>
   <link rel="stylesheet" href="styles.css" />
+  <style>
+    .video-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 20px;
+      margin-top: 20px;
+    }
+    .video-card {
+      background: var(--panel);
+      border-radius: 12px;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      text-align: center;
+      padding-bottom: 10px;
+    }
+    .video-card iframe {
+      width: 100%;
+      height: 180px;
+      border: none;
+    }
+    .video-card h3 {
+      font-size: 1rem;
+      margin: 10px 0 4px;
+      color: var(--primary-dark);
+    }
+    .video-card p {
+      font-size: 0.9rem;
+      color: var(--neutral-gray);
+      margin: 0 10px 8px;
+    }
+  </style>
 </head>
 <body>
   <nav class="navbar">
@@ -15,25 +46,56 @@
         <li><a href="index.html#interests">Research Interest</a></li>
         <li><a href="index.html#education">Education</a></li>
         <li><a href="index.html#publications">Publications</a></li>
+        <li><a href="index.html#awards">Awards</a></li>
         <li><a class="contact-btn" href="index.html#contact">Contact</a></li>
       </ul>
-      <button id="themeToggle" class="theme-toggle" aria-label="Toggle dark mode">🌓</button>
     </div>
   </nav>
 
   <header class="page-hero">
     <div class="container">
-      <h1>Research Projects</h1>
-      <p>Selected projects from research and coursework.</p>
+      <h1>Software Projects</h1>
+      <p>
+        Undergraduate coursework projects completed as part of my foundational training in computer science and engineering. 
+        These were not research-oriented but contributed to my technical grounding in programming and system design.
+      </p>
       <p><a class="inline-btn" href="index.html">← Back to Home</a></p>
     </div>
     <div class="mast-bg" aria-hidden="true"></div>
   </header>
 
   <main class="container page-content">
-    <div class="placeholder">
-      <p>Content coming soon — we’ll populate this from your CV.</p>
+    <div class="video-grid">
+      <div class="video-card">
+        <iframe src="https://www.youtube.com/embed/B4huNREGaVU" title="HealSync"></iframe>
+        <h3>HealSync</h3>
+        <p>Telemedicine platform built with React, Node.js, and MongoDB.</p>
+      </div>
+
+      <div class="video-card">
+        <iframe src="https://www.youtube.com/embed/wM-VvynZzSw" title="WanderWonder"></iframe>
+        <h3>WanderWonder</h3>
+        <p>Travel management system developed using Django and JavaScript.</p>
+      </div>
+
+      <div class="video-card">
+        <iframe src="https://www.youtube.com/embed/OxBkpnE_zl0" title="Esportes"></iframe>
+        <h3>Esportes</h3>
+        <p>Online shopping application built with Django and SQLite.</p>
+      </div>
+
+      <div class="video-card">
+        <iframe src="https://www.youtube.com/embed/LIMcMhuyr-c" title="Invade the Maze"></iframe>
+        <h3>Invade the Maze</h3>
+        <p>Arcade game designed and implemented in C++.</p>
+      </div>
     </div>
+
+    <ul class="about-highlights" style="margin-top: 30px;">
+      <li><strong>RemoteHorizon</strong> — Remote desktop access application developed in Java (Socket programming).</li>
+      <li><strong>Office Management System</strong> — Workflow automation system using PHP and MySQL.</li>
+      <li><strong>MyApp</strong> — Daily task assistant developed in Java with JavaFX.</li>
+    </ul>
   </main>
 
   <footer class="site-footer">

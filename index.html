@@ -1,3 +1,44 @@
+<style>
+.button-row {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 30px;
+}
+
+/* Base pill button */
+.pill-btn {
+  padding: 10px 20px;
+  border-radius: 50px;
+  text-decoration: none;
+  font-weight: 600;
+  color: var(--primary-dark);
+  background-color: var(--accent-warm);
+  transition: all 0.3s ease;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.08);
+}
+
+/* Secondary variant */
+.pill-btn.secondary {
+  background-color: var(--neutral-gray);
+  color: white;
+}
+
+/* Hover behavior for all */
+.pill-btn:hover {
+  background-color: var(--accent-gold);
+  color: white;
+  transform: translateY(-2px);
+}
+
+/* Secondary button hover */
+.pill-btn.secondary:hover {
+  background-color: var(--accent-warm);
+  color: var(--primary-dark);
+}
+</style>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -126,15 +167,14 @@
 </section>
 
 
-  <div class="watercolor-divider" aria-hidden="true"></div>
-
-  <section class="container">
-    <div class="button-row">
-<a class="pill-btn" href="projects.html">Undergraduate Coursework Software Projects</a>
-      <a class="pill-btn secondary" href="leadership.html">Co-curricular Activities</a>
-      <a class="pill-btn secondary" href="hobbies.html">Hobbies</a>
-    </div>
-  </section>
+<div class="watercolor-divider" aria-hidden="true"></div>
+<section class="container">
+  <div class="button-row">
+    <a class="pill-btn" href="projects.html">Undergraduate Coursework Software Projects</a>
+    <a class="pill-btn secondary" href="leadership.html">Co-curricular Activities</a>
+    <a class="pill-btn secondary" href="hobbies.html">Hobbies</a>
+  </div>
+</section>
 
   <div class="watercolor-divider" aria-hidden="true"></div>
 

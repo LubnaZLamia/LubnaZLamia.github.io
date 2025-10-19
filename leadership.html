@@ -3,8 +3,34 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Co-Curricular Activities — Lubna Zahan Lamia</title>
+  <title>Co-Curricular & Leadership Activities — Lubna Zahan Lamia</title>
   <link rel="stylesheet" href="styles.css" />
+  <style>
+    .slideshow-container {
+      max-width: 700px;
+      position: relative;
+      margin: 40px auto;
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    }
+    .slide {
+      display: none;
+      width: 100%;
+    }
+    .slide img {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+    .fade {
+      animation: fadeEffect 1.2s;
+    }
+    @keyframes fadeEffect {
+      from { opacity: 0.4; }
+      to { opacity: 1; }
+    }
+  </style>
 </head>
 <body>
   <nav class="navbar">
@@ -23,7 +49,7 @@
 
   <header class="page-hero">
     <div class="container">
-      <h1>Co-Curricular Activities</h1>
+      <h1>Co-Curricular & Leadership Activities</h1>
       <p>
         I have taken part in several departmental and university events that helped me develop
         teamwork, coordination, and communication skills alongside my academic studies.
@@ -37,7 +63,7 @@
     <ul class="about-highlights">
       <li>
         <strong>Event Organization — Department of Computer Science & Engineering, University of Dhaka</strong><br>
-        Led and assisted in planning and coordinating departmental programs such as <em>Graduation Week 2024</em>,
+        Assisted in planning and coordinating departmental programs such as <em>Graduation Week 2024</em>,
         supporting scheduling, registration, and on-site arrangements.
       </li>
 
@@ -47,6 +73,14 @@
         and the <em>CAIL LLM Workshop</em>, facilitating sessions and maintaining event flow.
       </li>
     </ul>
+
+    <!-- Slideshow Section -->
+    <div class="slideshow-container">
+      <div class="slide fade"><img src="extra1.JPG" alt="Leadership activity 1"></div>
+      <div class="slide fade"><img src="extra2.JPG" alt="Leadership activity 2"></div>
+      <div class="slide fade"><img src="extra3.JPG" alt="Leadership activity 3"></div>
+      <div class="slide fade"><img src="extra4.png" alt="Leadership activity 4"></div>
+    </div>
   </main>
 
   <footer class="site-footer">
@@ -55,6 +89,20 @@
     </div>
   </footer>
 
-  <script src="script.js"></script>
+  <script>
+    let slideIndex = 0;
+    showSlides();
+
+    function showSlides() {
+      const slides = document.getElementsByClassName("slide");
+      for (let i = 0; i < slides.length; i++) {
+        slides[i].style.display = "none";
+      }
+      slideIndex++;
+      if (slideIndex > slides.length) { slideIndex = 1; }
+      slides[slideIndex - 1].style.display = "block";
+      setTimeout(showSlides, 3000); // Change image every 3 seconds
+    }
+  </script>
 </body>
 </html>

@@ -23,12 +23,36 @@
       height: auto;
       display: block;
     }
+    /* Navigation buttons */
+    .prev, .next {
+      cursor: pointer;
+      position: absolute;
+      top: 50%;
+      width: auto;
+      padding: 10px 14px;
+      margin-top: -22px;
+      color: white;
+      font-weight: bold;
+      font-size: 18px;
+      border-radius: 0 3px 3px 0;
+      user-select: none;
+      background: rgba(0,0,0,0.4);
+      transition: 0.3s;
+    }
+    .next {
+      right: 0;
+      border-radius: 3px 0 0 3px;
+    }
+    .prev:hover, .next:hover {
+      background-color: rgba(0, 0, 0, 0.7);
+    }
+    /* Fading animation */
     .fade {
-      animation: fadeEffect 1.2s;
+      animation: fadeEffect 1s;
     }
     @keyframes fadeEffect {
-      from { opacity: 0.4; }
-      to { opacity: 1; }
+      from {opacity: 0.4;}
+      to {opacity: 1;}
     }
   </style>
 </head>
@@ -80,6 +104,10 @@
       <div class="slide fade"><img src="extra2.JPG" alt="Leadership activity 2"></div>
       <div class="slide fade"><img src="extra3.JPG" alt="Leadership activity 3"></div>
       <div class="slide fade"><img src="extra4.png" alt="Leadership activity 4"></div>
+
+      <!-- Navigation buttons -->
+      <a class="prev" onclick="changeSlide(-1)">&#10094;</a>
+      <a class="next" onclick="changeSlide(1)">&#10095;</a>
     </div>
   </main>
 
@@ -90,18 +118,21 @@
   </footer>
 
   <script>
-    let slideIndex = 0;
-    showSlides();
+    let slideIndex = 1;
+    showSlides(slideIndex);
 
-    function showSlides() {
+    function changeSlide(n) {
+      showSlides(slideIndex += n);
+    }
+
+    function showSlides(n) {
       const slides = document.getElementsByClassName("slide");
+      if (n > slides.length) { slideIndex = 1; }
+      if (n < 1) { slideIndex = slides.length; }
       for (let i = 0; i < slides.length; i++) {
         slides[i].style.display = "none";
       }
-      slideIndex++;
-      if (slideIndex > slides.length) { slideIndex = 1; }
       slides[slideIndex - 1].style.display = "block";
-      setTimeout(showSlides, 100000); // Change image every 3 seconds
     }
   </script>
 </body>

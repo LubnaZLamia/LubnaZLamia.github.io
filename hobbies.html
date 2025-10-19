@@ -13,26 +13,52 @@
       border-radius: 12px;
       overflow: hidden;
       box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+      background: var(--panel);
     }
-    .slide {
-      display: none;
-      width: 100%;
+    .slide { display: none; width: 100%; }
+    .slide img { width: 100%; height: auto; display: block; }
+
+    /* Title spacing */
+    h2 { margin-top: 40px; }
+
+    /* Navigation buttons */
+    .prev, .next {
+      cursor: pointer;
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      padding: 10px 14px;
+      color: #fff;
+      font-weight: 700;
+      font-size: 18px;
+      background: rgba(0,0,0,0.45);
+      border-radius: 8px;
+      user-select: none;
+      transition: background .2s ease;
     }
-    .slide img {
-      width: 100%;
-      height: auto;
-      display: block;
+    .prev { left: 10px; }
+    .next { right: 10px; }
+    .prev:hover, .next:hover { background: rgba(0,0,0,0.7); }
+
+    /* Dots */
+    .dots { text-align: center; padding: 10px 0 12px; }
+    .dot {
+      display: inline-block;
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      margin: 0 4px;
+      background: rgba(0,0,0,0.2);
+      cursor: pointer;
     }
-    h2 {
-      margin-top: 40px;
+    .dot.active { background: rgba(0,0,0,0.55); }
+    @media (prefers-color-scheme: dark){
+      .dot { background: rgba(255,255,255,0.2); }
+      .dot.active { background: rgba(255,255,255,0.7); }
     }
-    .fade {
-      animation: fadeEffect 1.2s;
-    }
-    @keyframes fadeEffect {
-      from { opacity: 0.4; }
-      to { opacity: 1; }
-    }
+
+    /* Soft fade */
+    .fade { animation: fadeEffect 350ms ease-in; }
+    @keyframes fadeEffect { from {opacity: .4} to {opacity: 1} }
   </style>
 </head>
 <body>
@@ -54,9 +80,7 @@
     <div class="container">
       <h1>Hobbies & Creative Work</h1>
       <p>
-        Beyond research, I find joy in quiet creative moments — painting, traveling, and cooking.  
-        These pursuits bring a sense of calm and perspective, often reminding me how inspiration and balance  
-        come from noticing small details, colors, and cultures around us.
+        Beyond research, I enjoy painting, traveling, and cooking — quiet, grounding activities that bring balance and fresh perspective.
       </p>
       <p><a class="inline-btn" href="index.html">← Back to Home</a></p>
     </div>
@@ -64,46 +88,40 @@
   </header>
 
   <main class="container page-content">
-    <!-- Painting Section -->
+    <!-- Painting -->
     <h2>Painting</h2>
     <p>
-      Painting is where I slow down and rediscover stillness — a space to think, observe, and translate emotion into color.  
-      Each piece is a small reflection of mood and movement, often inspired by moments that would otherwise go unnoticed.
+      A calm space to slow down, notice small details, and translate mood into color and form.
     </p>
-    <div class="slideshow-container" id="painting">
-      <script>
-        for (let i = 1; i <= 20; i++) {
-          document.write(`<div class='slide fade painting'><img src='paint${i}.jpg' alt='Painting ${i}'></div>`);
-        }
-      </script>
+    <div class="slideshow-container" id="painting-slideshow" data-prefix="paint" data-count="20">
+      <!-- slides injected by JS -->
+      <a class="prev" aria-label="Previous painting" onclick="plusSlides('painting-slideshow', -1)">&#10094;</a>
+      <a class="next" aria-label="Next painting" onclick="plusSlides('painting-slideshow', 1)">&#10095;</a>
+      <div class="dots" id="painting-dots"></div>
     </div>
 
-    <!-- Travel Section -->
+    <!-- Travel -->
     <h2>Travel</h2>
     <p>
-      Traveling gives me perspective — each place offers new colors, textures, and stories.  
-      I enjoy exploring cities and quiet corners alike, finding rhythm in contrasts and calm in unfamiliar streets.
+      New places, textures, and rhythms — I’m drawn to quiet streets and open skies in equal measure.
     </p>
-    <div class="slideshow-container" id="travel">
-      <script>
-        for (let i = 1; i <= 13; i++) {
-          document.write(`<div class='slide fade travel'><img src='travel${i}.jpg' alt='Travel Photo ${i}'></div>`);
-        }
-      </script>
+    <div class="slideshow-container" id="travel-slideshow" data-prefix="travel" data-count="13">
+      <!-- slides injected by JS -->
+      <a class="prev" aria-label="Previous travel photo" onclick="plusSlides('travel-slideshow', -1)">&#10094;</a>
+      <a class="next" aria-label="Next travel photo" onclick="plusSlides('travel-slideshow', 1)">&#10095;</a>
+      <div class="dots" id="travel-dots"></div>
     </div>
 
-    <!-- Cooking Section -->
+    <!-- Cooking -->
     <h2>Cooking</h2>
     <p>
-      Cooking is a soft experiment in rhythm and care — much like research, it requires patience, curiosity, and intuition.  
-      It’s my favorite way to unwind and share warmth with family and friends.
+      Simple, slow, and comforting — an easy way to unwind and share care with the people I love.
     </p>
-    <div class="slideshow-container" id="cooking">
-      <script>
-        for (let i = 1; i <= 4; i++) {
-          document.write(`<div class='slide fade cooking'><img src='cook${i}.jpg' alt='Cooking Photo ${i}'></div>`);
-        }
-      </script>
+    <div class="slideshow-container" id="cooking-slideshow" data-prefix="cook" data-count="4">
+      <!-- slides injected by JS -->
+      <a class="prev" aria-label="Previous cooking photo" onclick="plusSlides('cooking-slideshow', -1)">&#10094;</a>
+      <a class="next" aria-label="Next cooking photo" onclick="plusSlides('cooking-slideshow', 1)">&#10095;</a>
+      <div class="dots" id="cooking-dots"></div>
     </div>
   </main>
 
@@ -114,24 +132,76 @@
   </footer>
 
   <script>
-    // Slideshow logic for each section
-    function showSlides(className, indexName) {
-      let slides = document.getElementsByClassName(className);
-      for (let i = 0; i < slides.length; i++) slides[i].style.display = "none";
-      window[indexName]++;
-      if (window[indexName] > slides.length) window[indexName] = 1;
-      slides[window[indexName] - 1].style.display = "block";
-      setTimeout(() => showSlides(className, indexName), 3000);
+    // Build slides for a container from data-prefix & data-count
+    function buildSlideshow(containerId) {
+      const el = document.getElementById(containerId);
+      const prefix = el.dataset.prefix;              // e.g., 'paint'
+      const count  = parseInt(el.dataset.count, 10); // e.g., 20
+
+      // Create slide elements
+      for (let i = 1; i <= count; i++) {
+        const slide = document.createElement('div');
+        slide.className = 'slide fade';
+        const img = document.createElement('img');
+        img.src = `${prefix}${i}.jpg`;
+        img.alt = `${prefix} ${i}`;
+        slide.appendChild(img);
+        el.insertBefore(slide, el.querySelector('.prev')); // insert before buttons
+      }
+
+      // Create dots
+      const dotsWrapper = el.querySelector('.dots');
+      for (let i = 1; i <= count; i++) {
+        const dot = document.createElement('span');
+        dot.className = 'dot';
+        dot.onclick = () => currentSlide(containerId, i);
+        dotsWrapper.appendChild(dot);
+      }
+
+      // Initialize index
+      el.dataset.index = '1';
+      showSlides(containerId, 1);
     }
 
-    window.paintIndex = 0;
-    window.travelIndex = 0;
-    window.cookIndex = 0;
+    function plusSlides(containerId, n) {
+      const el = document.getElementById(containerId);
+      const idx = parseInt(el.dataset.index || '1', 10);
+      showSlides(containerId, idx + n);
+    }
 
-    window.onload = function () {
-      showSlides("painting", "paintIndex");
-      showSlides("travel", "travelIndex");
-      showSlides("cooking", "cookIndex");
+    function currentSlide(containerId, n) {
+      showSlides(containerId, n);
+    }
+
+    function showSlides(containerId, n) {
+      const el = document.getElementById(containerId);
+      const slides = el.querySelectorAll('.slide');
+      const dots   = el.querySelectorAll('.dot');
+      const total  = slides.length;
+
+      if (total === 0) return;
+
+      // Wrap around
+      if (n > total) n = 1;
+      if (n < 1) n = total;
+
+      // Hide all, deactivate dots
+      slides.forEach(s => s.style.display = 'none');
+      dots.forEach(d => d.classList.remove('active'));
+
+      // Show target, activate dot
+      slides[n - 1].style.display = 'block';
+      if (dots[n - 1]) dots[n - 1].classList.add('active');
+
+      // Save current index
+      el.dataset.index = String(n);
+    }
+
+    // Initialize all slideshows
+    window.onload = function() {
+      buildSlideshow('painting-slideshow');
+      buildSlideshow('travel-slideshow');
+      buildSlideshow('cooking-slideshow');
     };
   </script>
 </body>

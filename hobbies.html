@@ -5,12 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Hobbies & Creative Work — Lubna Zahan Lamia</title>
   <link rel="stylesheet" href="styles.css" />
-
-  <!-- Preload first images for faster initial display -->
-  <link rel="preload" as="image" href="paint1.jpg" fetchpriority="high">
-  <link rel="preload" as="image" href="travel1.jpg" fetchpriority="high">
-  <link rel="preload" as="image" href="cook1.jpg" fetchpriority="high">
-
   <style>
     .slideshow-container {
       max-width: 800px;
@@ -83,8 +77,8 @@
     <div class="container">
       <h1>Hobbies & Creative Work</h1>
       <p>
-        Beyond research, I find joy in quiet creative moments — painting, traveling, and cooking.  
-        These pursuits bring a sense of calm and perspective, often reminding me how inspiration and balance  
+        Beyond research, I find joy in quiet creative moments — painting, traveling, and cooking.
+        These pursuits bring a sense of calm and perspective, often reminding me how inspiration and balance
         come from noticing small details, colors, and cultures around us.
       </p>
       <p><a class="inline-btn" href="index.html">← Back to Home</a></p>
@@ -93,9 +87,10 @@
   </header>
 
   <main class="container page-content">
+    <!-- Painting -->
     <h2>Painting</h2>
     <p>
-      Painting is where I slow down and rediscover stillness — a space to think, observe, and translate emotion into color.  
+      Painting is where I slow down and rediscover stillness — a space to think, observe, and translate emotion into color.
       Each piece is a small reflection of mood and movement, often inspired by moments that would otherwise go unnoticed.
     </p>
     <div class="slideshow-container" id="painting-slideshow" data-prefix="paint" data-count="20">
@@ -104,9 +99,10 @@
       <div class="dots" id="painting-dots"></div>
     </div>
 
+    <!-- Travel -->
     <h2>Travel</h2>
     <p>
-      Traveling gives me perspective — each place offers new colors, textures, and stories.  
+      Traveling gives me perspective — each place offers new colors, textures, and stories.
       I enjoy exploring cities and quiet corners alike, finding rhythm in contrasts and calm in unfamiliar streets.
     </p>
     <div class="slideshow-container" id="travel-slideshow" data-prefix="travel" data-count="13">
@@ -115,9 +111,10 @@
       <div class="dots" id="travel-dots"></div>
     </div>
 
+    <!-- Cooking -->
     <h2>Cooking</h2>
     <p>
-      Cooking is a soft experiment in rhythm and care — much like research, it requires patience, curiosity, and intuition.  
+      Cooking is a soft experiment in rhythm and care — much like research, it requires patience, curiosity, and intuition.
       It’s my favorite way to unwind and share warmth with family and friends.
     </p>
     <div class="slideshow-container" id="cooking-slideshow" data-prefix="cook" data-count="4">
@@ -134,54 +131,113 @@
   </footer>
 
   <script>
+    // ----- Only detect extension: .jpg, .jpeg, .png -----
+    const EXT_OPTIONS = ["jpg", "jpeg", "png"];
+    const galleryExt = new Map(); // containerId -> "jpg" | "jpeg" | "png"
+
+    function buildUrl(prefix, i, ext) {
+      return `${prefix}${i}.${ext}`;
+    }
+
+    function tryImage(url) {
+      return new Promise(resolve => {
+        const img = new Image();
+        img.decoding = "async";
+        img.onload = () => resolve(true);
+        img.onerror = () => resolve(false);
+        img.src = url;
+      });
+    }
+
+    async function detectExt(containerId, prefix, index = 1) {
+      if (galleryExt.has(containerId)) return galleryExt.get(containerId);
+
+      // Optimistic: .jpg first
+      for (const ext of EXT_OPTIONS) {
+        const ok = await tryImage(buildUrl(prefix, index, ext));
+        if (ok) {
+          galleryExt.set(containerId, ext);
+          return ext;
+        }
+      }
+      // Fallback (shouldn't happen if files exist)
+      galleryExt.set(containerId, "jpg");
+      return "jpg";
+    }
+
+    async function setSrcWithDetect(imgEl, containerId, prefix, index, eager=false) {
+      if (eager) {
+        imgEl.loading = "eager";
+        imgEl.setAttribute("fetchpriority", "high");
+      }
+      imgEl.decoding = "async";
+
+      const known = galleryExt.get(containerId);
+      if (known) {
+        imgEl.src = buildUrl(prefix, index, known);
+        return;
+      }
+
+      // Try optimistic jpg; if fails, detect properly.
+      const optimistic = buildUrl(prefix, index, "jpg");
+      const success = await new Promise(resolve => {
+        imgEl.onload = () => resolve(true);
+        imgEl.onerror = () => resolve(false);
+        imgEl.src = optimistic;
+      });
+      if (success) {
+        galleryExt.set(containerId, "jpg");
+        return;
+      }
+
+      const ext = await detectExt(containerId, prefix, index);
+      imgEl.onload = null; imgEl.onerror = null;
+      imgEl.src = buildUrl(prefix, index, ext);
+    }
+
+    // ----- Slideshow -----
     function buildSlideshow(containerId) {
       const el = document.getElementById(containerId);
       const prefix = el.dataset.prefix;
       const count  = parseInt(el.dataset.count, 10);
 
-      // First image: eager load for instant display
+      // First slide (eager)
       if (count >= 1) {
-        const first = document.createElement('div');
-        first.className = 'slide fade';
-        const img0 = document.createElement('img');
-        img0.src = `${prefix}1.jpg`;
+        const first = document.createElement("div");
+        first.className = "slide fade";
+        const img0 = document.createElement("img");
         img0.alt = `${prefix} 1`;
-        img0.loading = 'eager';
-        img0.setAttribute('fetchpriority', 'high');
-        img0.decoding = 'async';
+        setSrcWithDetect(img0, containerId, prefix, 1, /*eager*/ true);
         first.appendChild(img0);
-        el.insertBefore(first, el.querySelector('.prev'));
+        el.insertBefore(first, el.querySelector(".prev"));
       }
 
-      // Remaining slides
+      // Remaining slides (src will be set during preloading/show)
       for (let i = 2; i <= count; i++) {
-        const slide = document.createElement('div');
-        slide.className = 'slide fade';
-        const img = document.createElement('img');
-        img.src = `${prefix}${i}.jpg`;
+        const slide = document.createElement("div");
+        slide.className = "slide fade";
+        const img = document.createElement("img");
         img.alt = `${prefix} ${i}`;
-        img.loading = 'lazy';
-        img.decoding = 'async';
         slide.appendChild(img);
-        el.insertBefore(slide, el.querySelector('.prev'));
+        el.insertBefore(slide, el.querySelector(".prev"));
       }
 
       // Dots
-      const dotsWrapper = el.querySelector('.dots');
+      const dotsWrapper = el.querySelector(".dots");
       for (let i = 1; i <= count; i++) {
-        const dot = document.createElement('span');
-        dot.className = 'dot';
+        const dot = document.createElement("span");
+        dot.className = "dot";
         dot.onclick = () => currentSlide(containerId, i);
         dotsWrapper.appendChild(dot);
       }
 
-      el.dataset.index = '1';
+      el.dataset.index = "1";
       showSlides(containerId, 1);
     }
 
     function plusSlides(containerId, n) {
       const el = document.getElementById(containerId);
-      const idx = parseInt(el.dataset.index || '1', 10);
+      const idx = parseInt(el.dataset.index || "1", 10);
       showSlides(containerId, idx + n);
     }
 
@@ -189,48 +245,122 @@
       showSlides(containerId, n);
     }
 
-    function showSlides(containerId, n) {
+    async function showSlides(containerId, n) {
       const el = document.getElementById(containerId);
-      const slides = el.querySelectorAll('.slide');
-      const dots   = el.querySelectorAll('.dot');
+      const slides = el.querySelectorAll(".slide");
+      const dots   = el.querySelectorAll(".dot");
       const total  = slides.length;
-
       if (total === 0) return;
+
       if (n > total) n = 1;
       if (n < 1) n = total;
 
-      slides.forEach(s => (s.style.display = 'none'));
-      dots.forEach(d => d.classList.remove('active'));
+      slides.forEach(s => (s.style.display = "none"));
+      dots.forEach(d => d.classList.remove("active"));
 
-      slides[n - 1].style.display = 'block';
-      if (dots[n - 1]) dots[n - 1].classList.add('active');
+      // Ensure target slide has src
+      const targetSlide = slides[n - 1];
+      const img = targetSlide.querySelector("img");
+      const prefix = el.dataset.prefix;
+      const id = el.id;
 
+      if (!img.getAttribute("src")) {
+        const ext = galleryExt.get(id) || await detectExt(id, prefix, n);
+        img.decoding = "async";
+        img.src = buildUrl(prefix, n, ext);
+      }
+
+      targetSlide.style.display = "block";
+      if (dots[n - 1]) dots[n - 1].classList.add("active");
       el.dataset.index = String(n);
+
+      warmNeighbors(el, n);
     }
 
-    // Preload all images in background
-    function preloadAll() {
-      const containers = document.querySelectorAll('.slideshow-container');
-      containers.forEach(el => {
-        const prefix = el.dataset.prefix;
-        const count  = parseInt(el.dataset.count, 10);
-        for (let i = 1; i <= count; i++) {
-          const img = new Image();
-          img.decoding = 'async';
-          img.src = `${prefix}${i}.jpg`;
-        }
+    function warmNeighbors(el, index) {
+      const prefix = el.dataset.prefix;
+      const count  = parseInt(el.dataset.count, 10);
+      const id     = el.id;
+      const ext    = galleryExt.get(id);
+
+      const next1  = ((index) % count) + 1;
+      const next2  = ((index + 1) % count) + 1;
+      const prev1  = ((index - 2 + count) % count) + 1;
+
+      [next1, next2, prev1].forEach(async i => {
+        const useExt = ext || await detectExt(id, prefix, i);
+        const img = new Image();
+        img.decoding = "async";
+        img.src = buildUrl(prefix, i, useExt);
       });
     }
 
-    window.addEventListener('DOMContentLoaded', () => {
-      buildSlideshow('painting-slideshow');
-      buildSlideshow('travel-slideshow');
-      buildSlideshow('cooking-slideshow');
-      requestAnimationFrame(preloadAll);
+    // ----- Round-robin preloading across galleries -----
+    async function roundRobinPreload() {
+      const galleries = Array.from(document.querySelectorAll(".slideshow-container"))
+        .map(el => ({
+          id: el.id,
+          el,
+          prefix: el.dataset.prefix,
+          count: parseInt(el.dataset.count, 10),
+          i: 1
+        }));
+
+      // Ensure each gallery has an extension quickly (probe #1)
+      await Promise.all(galleries.map(async g => {
+        if (!galleryExt.has(g.id)) {
+          await detectExt(g.id, g.prefix, 1);
+        }
+      }));
+
+      const head = document.head;
+      let remaining = true;
+
+      // Interleave: g1#1, g2#1, g3#1, g1#2, g2#2, ...
+      while (remaining) {
+        remaining = false;
+        for (const g of galleries) {
+          if (g.i <= g.count) {
+            remaining = true;
+            const ext = galleryExt.get(g.id) || "jpg";
+            const url = buildUrl(g.prefix, g.i, ext);
+
+            // If slide’s <img> exists and src unset, set it now
+            const slide = g.el.querySelectorAll(".slide")[g.i - 1];
+            const imgEl = slide?.querySelector("img");
+            if (imgEl && !imgEl.getAttribute("src")) {
+              imgEl.decoding = "async";
+              imgEl.src = url;
+            }
+
+            // Preload hint + push to cache
+            const link = document.createElement("link");
+            link.rel = "preload";
+            link.as = "image";
+            link.href = url;
+            head.appendChild(link);
+
+            const img = new Image();
+            img.decoding = "async";
+            img.src = url;
+
+            g.i++;
+          }
+        }
+      }
+    }
+
+    // ----- Bootstrap -----
+    window.addEventListener("DOMContentLoaded", () => {
+      buildSlideshow("painting-slideshow");
+      buildSlideshow("travel-slideshow");
+      buildSlideshow("cooking-slideshow");
+      requestAnimationFrame(() => setTimeout(roundRobinPreload, 0));
     });
 
-    window.addEventListener('load', () => {
-      const y = document.getElementById('year');
+    // Footer year
+    window.addEventListener("load", () => {
+      const y = document.getElementById("year");
       if (y) y.textContent = new Date().getFullYear();
     });
   </script>

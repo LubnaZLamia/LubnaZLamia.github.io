@@ -99,12 +99,13 @@
   </footer>
 
   <script>
-    // --- Config: detect file extension among jpg/jpeg/png (case-insensitive) ---
-    const EXT_OPTIONS = ["jpg","jpeg","png","JPG","JPEG","PNG"];
-    const galleryExt = new Map(); // containerId -> ext
+    // -------- Per-index extension auto-detect + preload ALL images --------
+    const EXT_CANDIDATES = ["jpg","jpeg","png","JPG","JPEG","PNG"];
+    // Map: containerId -> Map(index -> ext)
+    const indexExtMap = new Map();
 
-    function buildUrl(prefix, index, ext) {
-      return `${prefix}${index}.${ext}`;
+    function buildUrl(prefix, idx, ext) {
+      return `${prefix}${idx}.${ext}`;
     }
 
     function tryImage(url) {
@@ -116,37 +117,52 @@
       });
     }
 
-    async function detectExt(containerId, prefix, index = 1) {
-      if (galleryExt.has(containerId)) return galleryExt.get(containerId);
-      for (const ext of EXT_OPTIONS) {
-        if (await tryImage(buildUrl(prefix, index, ext))) {
-          galleryExt.set(containerId, ext);
+    async function detectExtForIndex(containerId, prefix, idx) {
+      const perIndex = indexExtMap.get(containerId) || new Map();
+      if (perIndex.has(idx)) return perIndex.get(idx);
+
+      for (const ext of EXT_CANDIDATES) {
+        if (await tryImage(buildUrl(prefix, idx, ext))) {
+          perIndex.set(idx, ext);
+          indexExtMap.set(containerId, perIndex);
           return ext;
         }
       }
-      // Fallback to jpg if nothing matched (prevents total break)
-      galleryExt.set(containerId, "jpg");
-      return "jpg";
+      // No match: record null to avoid endless retries; slideshow will skip missing images gracefully
+      perIndex.set(idx, null);
+      indexExtMap.set(containerId, perIndex);
+      return null;
     }
 
-    function preloadAll(prefix, count, ext) {
+    async function preloadAllPerIndex(containerId, prefix, count) {
       const head = document.head;
-      for (let i = 1; i <= count; i++) {
-        const url = buildUrl(prefix, i, ext);
+
+      // Detect extensions for all indices in parallel
+      const exts = await Promise.all(
+        Array.from({length: count}, (_, k) => detectExtForIndex(containerId, prefix, k+1))
+      );
+
+      // Preload each discovered URL
+      exts.forEach((ext, i) => {
+        const idx = i + 1;
+        if (!ext) return; // skip missing files
+        const url = buildUrl(prefix, idx, ext);
+
         const link = document.createElement("link");
         link.rel = "preload";
         link.as = "image";
         link.href = url;
         head.appendChild(link);
 
-        // Push to cache too
         const img = new Image();
         img.decoding = "async";
         img.src = url;
-      }
+      });
+
+      return exts; // array length=count, entries may be null
     }
 
-    // --- Slideshow state ---
+    // ----------------------- Slideshow state & UI ------------------------
     let slideIndex = 1;
 
     function showSlides(n) {
@@ -166,36 +182,43 @@
       showSlides(slideIndex += n);
     }
 
-    // --- Build slides dynamically, detect ext, and preload all images ---
+    // -------- Build slides after preloading all with per-index ext --------
     async function initSlideshow() {
       const container = document.getElementById("activities-slideshow");
-      const prefix = container.dataset.prefix;   // e.g., "extra"
+      const prefix = container.dataset.prefix;          // e.g., "extra"
       const count  = parseInt(container.dataset.count, 10); // e.g., 3
+      const id     = container.id;
 
-      // 1) Detect extension using image #1
-      const ext = await detectExt(container.id, prefix, 1);
+      // 1) Preload ALL images (per-index extension detection)
+      const exts = await preloadAllPerIndex(id, prefix, count);
 
-      // 2) Preload every image
-      preloadAll(prefix, count, ext);
-
-      // 3) Build slides (first eager)
+      // 2) Build slides; skip any index that had no matching file
+      //    First existing image is marked eager/high priority.
+      let firstShownSet = false;
       for (let i = 1; i <= count; i++) {
+        const ext = exts[i-1];
+        if (!ext) continue; // no file for this index
+
         const slide = document.createElement("div");
         slide.className = "slide fade";
+
         const img = document.createElement("img");
         img.alt = `${prefix} ${i}`;
         img.src = buildUrl(prefix, i, ext);
-        if (i === 1) {
+
+        if (!firstShownSet) {
           img.loading = "eager";
           img.setAttribute("fetchpriority", "high");
+          firstShownSet = true;
         } else {
           img.decoding = "async";
         }
+
         slide.appendChild(img);
         container.insertBefore(slide, container.querySelector(".prev"));
       }
 
-      // 4) Show first slide
+      // 3) Show first available slide
       slideIndex = 1;
       showSlides(slideIndex);
     }

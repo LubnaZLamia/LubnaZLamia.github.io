@@ -13,47 +13,33 @@
       border-radius: 10px;
       overflow: hidden;
       box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+      background: var(--panel);
     }
-    .slide {
-      display: none;
-      width: 100%;
-    }
-    .slide img {
-      width: 100%;
-      height: auto;
-      display: block;
-    }
+    .slide { display: none; width: 100%; }
+    .slide img { width: 100%; height: auto; display: block; }
+
     /* Navigation buttons */
     .prev, .next {
       cursor: pointer;
       position: absolute;
       top: 50%;
-      width: auto;
+      transform: translateY(-50%);
       padding: 10px 14px;
-      margin-top: -22px;
-      color: white;
+      color: #fff;
       font-weight: bold;
       font-size: 18px;
-      border-radius: 0 3px 3px 0;
       user-select: none;
       background: rgba(0,0,0,0.4);
-      transition: 0.3s;
+      border-radius: 8px;
+      transition: background .25s ease;
     }
-    .next {
-      right: 0;
-      border-radius: 3px 0 0 3px;
-    }
-    .prev:hover, .next:hover {
-      background-color: rgba(0, 0, 0, 0.7);
-    }
+    .prev { left: 8px; }
+    .next { right: 8px; }
+    .prev:hover, .next:hover { background: rgba(0,0,0,0.7); }
+
     /* Fading animation */
-    .fade {
-      animation: fadeEffect 1s;
-    }
-    @keyframes fadeEffect {
-      from {opacity: 0.4;}
-      to {opacity: 1;}
-    }
+    .fade { animation: fadeEffect .45s ease-in; }
+    @keyframes fadeEffect { from {opacity: .4} to {opacity: 1} }
   </style>
 </head>
 <body>
@@ -98,15 +84,11 @@
       </li>
     </ul>
 
-    <!-- Slideshow Section -->
-    <div class="slideshow-container">
-      <div class="slide fade"><img src="extra1.JPG" alt="Leadership activity 1"></div>
-      <div class="slide fade"><img src="extra2.JPG" alt="Leadership activity 2"></div>
-      <div class="slide fade"><img src="extra3.JPG" alt="Leadership activity 3"></div>
-
-      <!-- Navigation buttons -->
-      <a class="prev" onclick="changeSlide(-1)">&#10094;</a>
-      <a class="next" onclick="changeSlide(1)">&#10095;</a>
+    <!-- Slideshow (images built by JS) -->
+    <div class="slideshow-container" id="activities-slideshow" data-prefix="extra" data-count="3">
+      <!-- Slides injected by JS -->
+      <a class="prev" aria-label="Previous image" onclick="changeSlide(-1)">&#10094;</a>
+      <a class="next" aria-label="Next image" onclick="changeSlide(1)">&#10095;</a>
     </div>
   </main>
 
@@ -117,22 +99,117 @@
   </footer>
 
   <script>
+    // --- Config: detect file extension among jpg/jpeg/png (case-insensitive) ---
+    const EXT_OPTIONS = ["jpg","jpeg","png","JPG","JPEG","PNG"];
+    const galleryExt = new Map(); // containerId -> ext
+
+    function buildUrl(prefix, index, ext) {
+      return `${prefix}${index}.${ext}`;
+    }
+
+    function tryImage(url) {
+      return new Promise(resolve => {
+        const img = new Image();
+        img.onload = () => resolve(true);
+        img.onerror = () => resolve(false);
+        img.src = url;
+      });
+    }
+
+    async function detectExt(containerId, prefix, index = 1) {
+      if (galleryExt.has(containerId)) return galleryExt.get(containerId);
+      for (const ext of EXT_OPTIONS) {
+        if (await tryImage(buildUrl(prefix, index, ext))) {
+          galleryExt.set(containerId, ext);
+          return ext;
+        }
+      }
+      // Fallback to jpg if nothing matched (prevents total break)
+      galleryExt.set(containerId, "jpg");
+      return "jpg";
+    }
+
+    function preloadAll(prefix, count, ext) {
+      const head = document.head;
+      for (let i = 1; i <= count; i++) {
+        const url = buildUrl(prefix, i, ext);
+        const link = document.createElement("link");
+        link.rel = "preload";
+        link.as = "image";
+        link.href = url;
+        head.appendChild(link);
+
+        // Push to cache too
+        const img = new Image();
+        img.decoding = "async";
+        img.src = url;
+      }
+    }
+
+    // --- Slideshow state ---
     let slideIndex = 1;
-    showSlides(slideIndex);
+
+    function showSlides(n) {
+      const container = document.getElementById("activities-slideshow");
+      const slides = container.getElementsByClassName("slide");
+      const total = slides.length;
+
+      if (total === 0) return;
+      if (n > total) slideIndex = 1;
+      if (n < 1) slideIndex = total;
+
+      for (let i = 0; i < total; i++) slides[i].style.display = "none";
+      slides[slideIndex - 1].style.display = "block";
+    }
 
     function changeSlide(n) {
       showSlides(slideIndex += n);
     }
 
-    function showSlides(n) {
-      const slides = document.getElementsByClassName("slide");
-      if (n > slides.length) { slideIndex = 1; }
-      if (n < 1) { slideIndex = slides.length; }
-      for (let i = 0; i < slides.length; i++) {
-        slides[i].style.display = "none";
+    // --- Build slides dynamically, detect ext, and preload all images ---
+    async function initSlideshow() {
+      const container = document.getElementById("activities-slideshow");
+      const prefix = container.dataset.prefix;   // e.g., "extra"
+      const count  = parseInt(container.dataset.count, 10); // e.g., 3
+
+      // 1) Detect extension using image #1
+      const ext = await detectExt(container.id, prefix, 1);
+
+      // 2) Preload every image
+      preloadAll(prefix, count, ext);
+
+      // 3) Build slides (first eager)
+      for (let i = 1; i <= count; i++) {
+        const slide = document.createElement("div");
+        slide.className = "slide fade";
+        const img = document.createElement("img");
+        img.alt = `${prefix} ${i}`;
+        img.src = buildUrl(prefix, i, ext);
+        if (i === 1) {
+          img.loading = "eager";
+          img.setAttribute("fetchpriority", "high");
+        } else {
+          img.decoding = "async";
+        }
+        slide.appendChild(img);
+        container.insertBefore(slide, container.querySelector(".prev"));
       }
-      slides[slideIndex - 1].style.display = "block";
+
+      // 4) Show first slide
+      slideIndex = 1;
+      showSlides(slideIndex);
     }
+
+    // Boot
+    window.addEventListener("DOMContentLoaded", () => {
+      initSlideshow();
+    });
+
+    // Footer year
+    window.addEventListener("load", () => {
+      const y = document.getElementById("year");
+      if (y) y.textContent = new Date().getFullYear();
+    });
   </script>
 </body>
 </html>

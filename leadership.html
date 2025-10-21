@@ -6,14 +6,6 @@
   <title>Co-Curricular & Leadership Activities — Lubna Zahan Lamia</title>
   <link rel="stylesheet" href="styles.css" />
 
-  <!-- ✅ Aggressive preloads for FIRST image (extra1.*) to avoid initial lag -->
-  <link rel="preload" as="image" href="extra1.jpg">
-  <link rel="preload" as="image" href="extra1.jpeg">
-  <link rel="preload" as="image" href="extra1.png">
-  <link rel="preload" as="image" href="extra1.JPG">
-  <link rel="preload" as="image" href="extra1.JPEG">
-  <link rel="preload" as="image" href="extra1.PNG">
-
   <style>
     .slideshow-container {
       max-width: 700px;
@@ -27,7 +19,6 @@
     .slide { display: none; width: 100%; }
     .slide img { width: 100%; height: auto; display: block; }
 
-    /* Navigation buttons */
     .prev, .next {
       cursor: pointer;
       position: absolute;
@@ -46,10 +37,53 @@
     .next { right: 8px; }
     .prev:hover, .next:hover { background: rgba(0,0,0,0.7); }
 
-    /* Fading animation */
     .fade { animation: fadeEffect .45s ease-in; }
     @keyframes fadeEffect { from {opacity: .4} to {opacity: 1} }
   </style>
+
+  <!-- ⚡ Ultra-early detector: picks the right extension for extra1.* and paints it ASAP -->
+  <script>
+    (function() {
+      const exts = ["jpg","jpeg","png","JPG","JPEG","PNG"];
+      const prefix = "extra";
+      const idx = 1;
+      let picked = null;
+
+      function setFirst(url, ext) {
+        picked = ext;
+        // Preload the exact file we’ll show (helps paint faster)
+        const link = document.createElement('link');
+        link.rel = 'preload';
+        link.as  = 'image';
+        link.href = url;
+        document.head.appendChild(link);
+
+        // Put it into the already-in-DOM <img>
+        const img = document.getElementById('first-slide-img');
+        if (img && !img.src) {
+          img.src = url;
+          img.setAttribute('fetchpriority', 'high');
+          img.loading = 'eager';
+        }
+        // Remember chosen ext on the container for later preloads
+        const cont = document.getElementById('activities-slideshow');
+        if (cont) cont.dataset.ext1 = ext;
+      }
+
+      function test(i) {
+        if (i >= exts.length) return; // give up; slideshow will still detect later
+        const ext = exts[i];
+        const url = `${prefix}${idx}.${ext}`;
+        const probe = new Image();
+        probe.onload = function(){ setFirst(url, ext); };
+        probe.onerror = function(){ test(i+1); };
+        probe.src = url;
+      }
+
+      // Start detection immediately, before DOMContentLoaded
+      test(0);
+    })();
+  </script>
 </head>
 <body>
   <nav class="navbar">
@@ -93,9 +127,14 @@
       </li>
     </ul>
 
-    <!-- Slideshow (images built by JS) -->
+    <!-- Slideshow -->
     <div class="slideshow-container" id="activities-slideshow" data-prefix="extra" data-count="3">
-      <!-- Slides injected by JS -->
+      <!-- ✅ First slide is real HTML so it can paint immediately -->
+      <div class="slide fade" style="display:block">
+        <img id="first-slide-img" alt="extra 1"><!-- src set in <head> detector -->
+      </div>
+
+      <!-- Nav buttons -->
       <a class="prev" aria-label="Previous image" onclick="changeSlide(-1)">&#10094;</a>
       <a class="next" aria-label="Next image" onclick="changeSlide(1)">&#10095;</a>
     </div>
@@ -108,134 +147,115 @@
   </footer>
 
   <script>
-    // -------- Per-index extension auto-detect + preload ALL images --------
+    // ---------- Preload & build remaining slides (2..N) ----------
     const EXT_CANDIDATES = ["jpg","jpeg","png","JPG","JPEG","PNG"];
-    // Map: containerId -> Map(index -> ext)
-    const indexExtMap = new Map();
+    const indexExtMap = new Map(); // id -> Map(index->ext)
 
-    function buildUrl(prefix, idx, ext) {
-      return `${prefix}${idx}.${ext}`;
-    }
-
+    function buildUrl(prefix, idx, ext) { return `${prefix}${idx}.${ext}`; }
     function tryImage(url) {
-      return new Promise(resolve => {
+      return new Promise(res => {
         const img = new Image();
-        img.onload = () => resolve(true);
-        img.onerror = () => resolve(false);
+        img.onload = () => res(true);
+        img.onerror = () => res(false);
         img.src = url;
       });
     }
 
     async function detectExtForIndex(containerId, prefix, idx) {
-      const perIndex = indexExtMap.get(containerId) || new Map();
-      if (perIndex.has(idx)) return perIndex.get(idx);
+      const per = indexExtMap.get(containerId) || new Map();
+      if (per.has(idx)) return per.get(idx);
+
+      // Use early-picked ext for #1 if available
+      if (idx === 1) {
+        const cont = document.getElementById(containerId);
+        const preset = cont?.dataset?.ext1;
+        if (preset) {
+          per.set(1, preset);
+          indexExtMap.set(containerId, per);
+          return preset;
+        }
+      }
 
       for (const ext of EXT_CANDIDATES) {
         if (await tryImage(buildUrl(prefix, idx, ext))) {
-          perIndex.set(idx, ext);
-          indexExtMap.set(containerId, perIndex);
+          per.set(idx, ext);
+          indexExtMap.set(containerId, per);
           return ext;
         }
       }
-      // No match: record null to avoid endless retries; slideshow will skip missing images gracefully
-      perIndex.set(idx, null);
-      indexExtMap.set(containerId, perIndex);
+      per.set(idx, null);
+      indexExtMap.set(containerId, per);
       return null;
     }
 
     async function preloadAllPerIndex(containerId, prefix, count) {
       const head = document.head;
-
-      // Detect extensions for all indices in parallel
       const exts = await Promise.all(
         Array.from({length: count}, (_, k) => detectExtForIndex(containerId, prefix, k+1))
       );
-
-      // Preload each discovered URL
       exts.forEach((ext, i) => {
-        const idx = i + 1;
-        if (!ext) return; // skip missing files
-        const url = buildUrl(prefix, idx, ext);
-
-        const link = document.createElement("link");
-        link.rel = "preload";
-        link.as = "image";
+        if (!ext) return;
+        const url = buildUrl(prefix, i+1, ext);
+        const link = document.createElement('link');
+        link.rel = 'preload';
+        link.as  = 'image';
         link.href = url;
         head.appendChild(link);
-
         const img = new Image();
-        img.decoding = "async";
+        img.decoding = 'async';
         img.src = url;
       });
-
-      return exts; // array length=count, entries may be null
+      return exts;
     }
 
-    // ----------------------- Slideshow state & UI ------------------------
+    // ---------------- Slideshow state ----------------
     let slideIndex = 1;
 
     function showSlides(n) {
       const container = document.getElementById("activities-slideshow");
       const slides = container.getElementsByClassName("slide");
       const total = slides.length;
-
       if (total === 0) return;
+
       if (n > total) slideIndex = 1;
       if (n < 1) slideIndex = total;
 
       for (let i = 0; i < total; i++) slides[i].style.display = "none";
       slides[slideIndex - 1].style.display = "block";
     }
+    function changeSlide(n) { showSlides(slideIndex += n); }
 
-    function changeSlide(n) {
-      showSlides(slideIndex += n);
-    }
-
-    // -------- Build slides after preloading all with per-index ext --------
+    // -------------- Build remaining slides --------------
     async function initSlideshow() {
       const container = document.getElementById("activities-slideshow");
-      const prefix = container.dataset.prefix;          // e.g., "extra"
-      const count  = parseInt(container.dataset.count, 10); // e.g., 3
+      const prefix = container.dataset.prefix;
+      const count  = parseInt(container.dataset.count, 10);
       const id     = container.id;
 
-      // 1) Preload ALL images (per-index extension detection)
+      // Preload everything (2..N will resolve here; #1 was chosen in <head>)
       const exts = await preloadAllPerIndex(id, prefix, count);
 
-      // 2) Build slides; skip any index that had no matching file
-      //    First existing image is marked eager/high priority.
-      let firstShownSet = false;
-      for (let i = 1; i <= count; i++) {
+      // Build slides for indices 2..N
+      for (let i = 2; i <= count; i++) {
         const ext = exts[i-1];
-        if (!ext) continue; // no file for this index
-
+        if (!ext) continue;
         const slide = document.createElement("div");
         slide.className = "slide fade";
-
         const img = document.createElement("img");
         img.alt = `${prefix} ${i}`;
         img.src = buildUrl(prefix, i, ext);
-
-        if (!firstShownSet) {
-          img.loading = "eager";
-          img.setAttribute("fetchpriority", "high");
-          firstShownSet = true;
-        } else {
-          img.decoding = "async";
-        }
-
+        img.decoding = "async";
         slide.appendChild(img);
         container.insertBefore(slide, container.querySelector(".prev"));
       }
 
-      // 3) Show first available slide
+      // Ensure we’re showing the first slide already in DOM
       slideIndex = 1;
       showSlides(slideIndex);
     }
 
     // Boot
-    window.addEventListener("DOMContentLoaded", () => {
-      initSlideshow();
-    });
+    window.addEventListener("DOMContentLoaded", initSlideshow);
 
     // Footer year
     window.addEventListener("load", () => {

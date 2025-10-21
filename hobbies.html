@@ -5,6 +5,30 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Hobbies & Creative Work — Lubna Zahan Lamia</title>
   <link rel="stylesheet" href="styles.css" />
+
+  <!-- ✅ Aggressive preloads for FIRST image of each gallery (covers jpg/jpeg/png + case) -->
+  <!-- Painting #1 -->
+  <link rel="preload" as="image" href="paint1.jpg">
+  <link rel="preload" as="image" href="paint1.jpeg">
+  <link rel="preload" as="image" href="paint1.png">
+  <link rel="preload" as="image" href="paint1.JPG">
+  <link rel="preload" as="image" href="paint1.JPEG">
+  <link rel="preload" as="image" href="paint1.PNG">
+  <!-- Travel #1 -->
+  <link rel="preload" as="image" href="travel1.jpg">
+  <link rel="preload" as="image" href="travel1.jpeg">
+  <link rel="preload" as="image" href="travel1.png">
+  <link rel="preload" as="image" href="travel1.JPG">
+  <link rel="preload" as="image" href="travel1.JPEG">
+  <link rel="preload" as="image" href="travel1.PNG">
+  <!-- Cooking #1 -->
+  <link rel="preload" as="image" href="cook1.jpg">
+  <link rel="preload" as="image" href="cook1.jpeg">
+  <link rel="preload" as="image" href="cook1.png">
+  <link rel="preload" as="image" href="cook1.JPG">
+  <link rel="preload" as="image" href="cook1.JPEG">
+  <link rel="preload" as="image" href="cook1.PNG">
+
   <style>
     .slideshow-container {
       max-width: 800px;
@@ -122,7 +146,8 @@
   </footer>
 
   <script>
-    const EXT_OPTIONS = ["jpg", "jpeg", "png"];
+    // Include uppercase in case your files are .JPG/.PNG on disk
+    const EXT_OPTIONS = ["jpg", "jpeg", "png", "JPG", "JPEG", "PNG"];
     const galleryExt = new Map();
 
     function buildUrl(prefix, i, ext) {
@@ -140,12 +165,14 @@
 
     async function detectExt(containerId, prefix, index = 1) {
       if (galleryExt.has(containerId)) return galleryExt.get(containerId);
+      // Try all extensions for the FIRST image (already preloaded above for speed)
       for (const ext of EXT_OPTIONS) {
         if (await tryImage(buildUrl(prefix, index, ext))) {
           galleryExt.set(containerId, ext);
           return ext;
         }
       }
+      // Fallback to jpg; adjust if your first images use a different ext
       galleryExt.set(containerId, "jpg");
       return "jpg";
     }
@@ -154,12 +181,15 @@
       const head = document.head;
       for (let i = 1; i <= count; i++) {
         const url = buildUrl(prefix, i, ext);
+        // Duplicate preloads are harmless; browser will coalesce
         const link = document.createElement("link");
         link.rel = "preload";
         link.as = "image";
         link.href = url;
         head.appendChild(link);
+
         const img = new Image();
+        img.decoding = "async";
         img.src = url;
       }
     }
@@ -169,10 +199,12 @@
       const prefix = el.dataset.prefix;
       const count = parseInt(el.dataset.count, 10);
 
-      // Detect extension and preload all images
+      // Detect ext (fast path: one of the preloaded variants should hit cache)
       const ext = await detectExt(containerId, prefix, 1);
+      // Preload all images for this gallery
       preloadAllImages(prefix, count, ext);
 
+      // Build slides
       for (let i = 1; i <= count; i++) {
         const slide = document.createElement("div");
         slide.className = "slide fade";
@@ -182,11 +214,14 @@
         if (i === 1) {
           img.loading = "eager";
           img.setAttribute("fetchpriority", "high");
+        } else {
+          img.decoding = "async";
         }
         slide.appendChild(img);
         el.insertBefore(slide, el.querySelector(".prev"));
       }
 
+      // Dots
       const dotsWrapper = el.querySelector(".dots");
       for (let i = 1; i <= count; i++) {
         const dot = document.createElement("span");

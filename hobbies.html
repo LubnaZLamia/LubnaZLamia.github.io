@@ -58,45 +58,6 @@
     .fade { animation: fadeEffect 350ms ease-in; }
     @keyframes fadeEffect { from {opacity: .4} to {opacity: 1} }
   </style>
-
-  <!-- Early detector for preloading -->
-  <script>
-    (function(){
-      const EXT = ["jpg","jpeg","png","JPG","JPEG","PNG"];
-      const firsts = [
-        ["painting-slideshow","paint",1],
-        ["travel-slideshow","travel",1],
-        ["cooking-slideshow","cook",1]
-      ];
-      window.__firstSrc = {};
-      window.__firstExt = {};
-
-      function preload(url){
-        const l = document.createElement("link");
-        l.rel = "preload"; l.as = "image"; l.href = url;
-        document.head.appendChild(l);
-        const im = new Image(); im.decoding = "async"; im.src = url;
-      }
-
-      function pickFor(prefix, idx, key){
-        let i = 0;
-        (function tryNext(){
-          if (i >= EXT.length) return;
-          const ext = EXT[i++];
-          const url = `${prefix}${idx}.${ext}`;
-          const probe = new Image();
-          probe.onload = function(){
-            window.__firstSrc[key] = url;
-            window.__firstExt[key] = ext;
-            preload(url);
-          };
-          probe.onerror = tryNext;
-          probe.src = url;
-        })();
-      }
-      firsts.forEach(([id,prefix,idx]) => pickFor(prefix, idx, id));
-    })();
-  </script>
 </head>
 <body>
   <nav class="navbar">
@@ -127,33 +88,11 @@
   </header>
 
   <main class="container page-content">
-
     <!-- Painting -->
     <h2>Painting</h2>
     <p>Painting is where I slow down and rediscover stillness — a space to think, observe, and translate emotion into color.</p>
     <div class="slideshow-container" id="painting-slideshow" data-prefix="paint" data-count="20">
-      <div class="slide fade" style="display:block">
-        <img id="paint-first-img" alt="paint 1" loading="eager" fetchpriority="high">
-        <script>
-        (function attachFirst(containerId, imgId, prefix){
-          const EXT=["jpg","jpeg","png","JPG","JPEG","PNG"];
-          const img=document.getElementById(imgId);
-          (function waitForEarlyPick(){
-            const pick=(window.__firstSrc||{})[containerId];
-            if (pick){ img.src=pick; return; }
-            let i=0;
-            (function probe(){
-              if (img.src) return;
-              if (i>=EXT.length){ img.src=prefix+"1.jpg"; return; }
-              const ext=EXT[i++], url=prefix+"1."+ext, test=new Image();
-              test.onload=function(){ if(!img.src) img.src=url; };
-              test.onerror=probe;
-              test.src=url;
-            })();
-          })();
-        })("painting-slideshow","paint-first-img","paint");
-        </script>
-      </div>
+      <!-- slides are inserted by JS (1..N) -->
       <a class="prev" onclick="plusSlides('painting-slideshow', -1)">&#10094;</a>
       <a class="next" onclick="plusSlides('painting-slideshow', 1)">&#10095;</a>
       <div class="dots"></div>
@@ -163,28 +102,7 @@
     <h2>Travel</h2>
     <p>Traveling gives me perspective — each place offers new colors, textures, and stories.</p>
     <div class="slideshow-container" id="travel-slideshow" data-prefix="travel" data-count="13">
-      <div class="slide fade" style="display:block">
-        <img id="travel-first-img" alt="travel 1" loading="eager" fetchpriority="high">
-        <script>
-        (function attachFirst(containerId, imgId, prefix){
-          const EXT=["jpg","jpeg","png","JPG","JPEG","PNG"];
-          const img=document.getElementById(imgId);
-          (function waitForEarlyPick(){
-            const pick=(window.__firstSrc||{})[containerId];
-            if (pick){ img.src=pick; return; }
-            let i=0;
-            (function probe(){
-              if (img.src) return;
-              if (i>=EXT.length){ img.src=prefix+"1.jpg"; return; }
-              const ext=EXT[i++], url=prefix+"1."+ext, test=new Image();
-              test.onload=function(){ if(!img.src) img.src=url; };
-              test.onerror=probe;
-              test.src=url;
-            })();
-          })();
-        })("travel-slideshow","travel-first-img","travel");
-        </script>
-      </div>
+      <!-- slides are inserted by JS (1..N) -->
       <a class="prev" onclick="plusSlides('travel-slideshow', -1)">&#10094;</a>
       <a class="next" onclick="plusSlides('travel-slideshow', 1)">&#10095;</a>
       <div class="dots"></div>
@@ -194,28 +112,7 @@
     <h2>Cooking</h2>
     <p>Cooking is a soft experiment in rhythm and care — my favorite way to unwind and share warmth with family and friends.</p>
     <div class="slideshow-container" id="cooking-slideshow" data-prefix="cook" data-count="4">
-      <div class="slide fade" style="display:block">
-        <img id="cook-first-img" alt="cook 1" loading="eager" fetchpriority="high">
-        <script>
-        (function attachFirst(containerId, imgId, prefix){
-          const EXT=["jpg","jpeg","png","JPG","JPEG","PNG"];
-          const img=document.getElementById(imgId);
-          (function waitForEarlyPick(){
-            const pick=(window.__firstSrc||{})[containerId];
-            if (pick){ img.src=pick; return; }
-            let i=0;
-            (function probe(){
-              if (img.src) return;
-              if (i>=EXT.length){ img.src=prefix+"1.jpg"; return; }
-              const ext=EXT[i++], url=prefix+"1."+ext, test=new Image();
-              test.onload=function(){ if(!img.src) img.src=url; };
-              test.onerror=probe;
-              test.src=url;
-            })();
-          })();
-        })("cooking-slideshow","cook-first-img","cook");
-        </script>
-      </div>
+      <!-- slides are inserted by JS (1..N) -->
       <a class="prev" onclick="plusSlides('cooking-slideshow', -1)">&#10094;</a>
       <a class="next" onclick="plusSlides('cooking-slideshow', 1)">&#10095;</a>
       <div class="dots"></div>
@@ -229,86 +126,114 @@
   </footer>
 
   <script>
+    // Unified builder: creates slides 1..N and sets src for ALL, including the first.
     const EXT_OPTIONS = ["jpg","jpeg","png","JPG","JPEG","PNG"];
     const galleryExt = new Map();
+
     function buildUrl(prefix, i, ext){ return `${prefix}${i}.${ext}`; }
-    function tryImage(url){ return new Promise(r=>{ const im=new Image(); im.onload=()=>r(true); im.onerror=()=>r(false); im.src=url; }); }
+    function tryImage(url){
+      return new Promise(res => { const im=new Image(); im.onload=()=>res(true); im.onerror=()=>res(false); im.src=url; });
+    }
+
     async function detectExt(containerId, prefix, index=1){
-      const firstExt=(window.__firstExt||{})[containerId];
-      if (firstExt && index===1){ galleryExt.set(containerId,firstExt); return firstExt; }
       if (galleryExt.has(containerId)) return galleryExt.get(containerId);
       for (const ext of EXT_OPTIONS){
-        if (await tryImage(buildUrl(prefix,index,ext))){
-          galleryExt.set(containerId,ext);
+        if (await tryImage(buildUrl(prefix, index, ext))){
+          galleryExt.set(containerId, ext);
           return ext;
         }
       }
-      galleryExt.set(containerId,"jpg");
+      galleryExt.set(containerId, "jpg");
       return "jpg";
     }
-    function preloadAllImages(prefix,count,ext){
+
+    function preloadAllImages(prefix, count, ext){
       const head=document.head;
-      for(let i=1;i<=count;i++){
+      for (let i=1;i<=count;i++){
         const url=buildUrl(prefix,i,ext);
         const link=document.createElement("link");
         link.rel="preload"; link.as="image"; link.href=url;
         head.appendChild(link);
-        const im=new Image(); im.decoding="async"; im.src=url;
       }
     }
+
     async function buildSlideshow(containerId){
-      const el=document.getElementById(containerId);
-      const prefix=el.dataset.prefix;
-      const count=parseInt(el.dataset.count,10);
-      const ext=await detectExt(containerId,prefix,1);
-      preloadAllImages(prefix,count,ext);
-      for(let i=2;i<=count;i++){
-        const slide=document.createElement("div");
-        slide.className="slide fade";
-        const img=document.createElement("img");
-        img.alt=`${prefix} ${i}`;
-        img.src=buildUrl(prefix,i,ext);
-        img.decoding="async";
+      const el = document.getElementById(containerId);
+      if (!el) return;
+      const prefix = el.dataset.prefix;
+      const count = parseInt(el.dataset.count || "0",10);
+      if (!prefix || !count) return;
+
+      // Decide extension from image #1 and use for all
+      const ext = await detectExt(containerId, prefix, 1);
+
+      // Preload (optional but smooth)
+      preloadAllImages(prefix, count, ext);
+
+      // Insert slides 1..N BEFORE the prev arrow
+      const beforeNode = el.querySelector(".prev") || el.firstChild;
+
+      for (let i=1;i<=count;i++){
+        const slide = document.createElement("div");
+        slide.className = "slide fade";
+        const img = document.createElement("img");
+        img.alt = `${prefix} ${i}`;
+        img.decoding = "async";
+        img.loading = i === 1 ? "eager" : "lazy";
+        img.fetchPriority = i === 1 ? "high" : "auto";
+        img.src = buildUrl(prefix, i, ext);
         slide.appendChild(img);
-        el.insertBefore(slide,el.querySelector(".prev"));
+        el.insertBefore(slide, beforeNode);
       }
-      const dotsWrapper=el.querySelector(".dots");
-      for(let i=1;i<=count;i++){
-        const dot=document.createElement("span");
-        dot.className="dot";
-        dot.onclick=()=>currentSlide(containerId,i);
+
+      // Build dots
+      const dotsWrapper = el.querySelector(".dots");
+      dotsWrapper.innerHTML = "";
+      for (let i=1;i<=count;i++){
+        const dot = document.createElement("span");
+        dot.className = "dot";
+        dot.onclick = () => currentSlide(containerId, i);
         dotsWrapper.appendChild(dot);
       }
-      el.dataset.index="1";
-      showSlides(containerId,1);
+
+      // Show first slide
+      el.dataset.index = "1";
+      showSlides(containerId, 1);
     }
-    function plusSlides(containerId,n){
-      const el=document.getElementById(containerId);
-      const idx=parseInt(el.dataset.index||"1",10);
-      showSlides(containerId,idx+n);
+
+    function plusSlides(containerId, n){
+      const el = document.getElementById(containerId);
+      const idx = parseInt(el.dataset.index || "1",10);
+      showSlides(containerId, idx + n);
     }
-    function currentSlide(containerId,n){ showSlides(containerId,n); }
-    function showSlides(containerId,n){
-      const el=document.getElementById(containerId);
-      const slides=el.querySelectorAll(".slide");
-      const dots=el.querySelectorAll(".dot");
-      const total=slides.length;
-      if(!total) return;
-      if(n>total) n=1; if(n<1) n=total;
-      slides.forEach(s=>s.style.display="none");
-      dots.forEach(d=>d.classList.remove("active"));
-      slides[n-1].style.display="block";
-      if(dots[n-1]) dots[n-1].classList.add("active");
-      el.dataset.index=String(n);
+
+    function currentSlide(containerId, n){ showSlides(containerId, n); }
+
+    function showSlides(containerId, n){
+      const el = document.getElementById(containerId);
+      const slides = el.querySelectorAll(".slide");
+      const dots = el.querySelectorAll(".dot");
+      const total = slides.length;
+      if (!total) return;
+      if (n > total) n = 1;
+      if (n < 1) n = total;
+
+      slides.forEach(s => s.style.display = "none");
+      dots.forEach(d => d.classList.remove("active"));
+      slides[n-1].style.display = "block";
+      if (dots[n-1]) dots[n-1].classList.add("active");
+      el.dataset.index = String(n);
     }
-    window.addEventListener("DOMContentLoaded",async()=>{
+
+    window.addEventListener("DOMContentLoaded", async ()=>{
       await buildSlideshow("painting-slideshow");
       await buildSlideshow("travel-slideshow");
       await buildSlideshow("cooking-slideshow");
     });
-    window.addEventListener("load",()=>{
+
+    window.addEventListener("load", ()=>{
       const y=document.getElementById("year");
-      if(y) y.textContent=new Date().getFullYear();
+      if (y) y.textContent = new Date().getFullYear();
     });
   </script>
 </body>

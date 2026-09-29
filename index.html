@@ -1,240 +1,518 @@
-
-<style>
-.button-row {
-  display: flex;
-  justify-content: center;
-  flex-wrap: wrap;
-  gap: 12px;
-  margin-top: 30px;
-}
-
-/* Base pill button */
-.pill-btn {
-  padding: 10px 20px;
-  border-radius: 50px;
-  text-decoration: none;
-  font-weight: 600;
-  color: var(--primary-dark);
-  background-color: var(--accent-warm);
-  transition: all 0.3s ease;
-  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.08);
-}
-
-/* Hover behavior for all. */
-.pill-btn:hover {
-  background-color: var(--accent-gold);
-  color: white;
-  transform: translateY(-2px);
-}
-</style>
-
-
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Lubna Zahan Lamia | Portfolio</title>
-  <meta name="description" content="Portfolio of Lubna Zahan Lamia — Computer Science Graduate | Human-AI Collaboration & NLP Enthusiast" />
+
+  <!-- SEO -->
+  <title>Lubna Zahan Lamia | Computer Science PhD Student at Dartmouth College</title>
+
+  <meta
+    name="description"
+    content="Lubna Zahan Lamia is a PhD student in Computer Science at Dartmouth College. Her research interests include natural language processing, human-AI interaction, responsible AI, and large language models."
+  />
+
+  <meta
+    name="keywords"
+    content="Lubna Zahan Lamia, Dartmouth College, Computer Science, PhD, Natural Language Processing, NLP, Human-AI Interaction, Responsible AI, Large Language Models, LLMs"
+  />
+
+  <meta name="author" content="Lubna Zahan Lamia" />
+
   <link rel="stylesheet" href="styles.css" />
+
+  <style>
+    .button-row {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 30px;
+    }
+
+    /* Base pill button */
+    .pill-btn {
+      padding: 10px 20px;
+      border-radius: 50px;
+      text-decoration: none;
+      font-weight: 600;
+      color: var(--primary-dark);
+      background-color: var(--accent-warm);
+      transition: all 0.3s ease;
+      box-shadow: 0 3px 8px rgba(0, 0, 0, 0.08);
+    }
+
+    /* Hover behavior for all */
+    .pill-btn:hover {
+      background-color: var(--accent-gold);
+      color: white;
+      transform: translateY(-2px);
+    }
+  </style>
+
 </head>
+
 <body>
+
+  <!-- Navigation -->
   <nav class="navbar">
     <div class="container nav-inner">
-      <div class="logo"><a href="index.html">LZL</a></div>
+
+      <div class="logo">
+        <a href="index.html">LZL</a>
+      </div>
+
       <ul class="nav-links">
         <li><a href="#about">About</a></li>
-        <li><a href="#interests">Research Interest</a></li>
+        <li><a href="#interests">Research Interests</a></li>
         <li><a href="#education">Education</a></li>
         <li><a href="#publications">Publications</a></li>
         <li><a class="contact-btn" href="#contact">Contact</a></li>
       </ul>
+
     </div>
   </nav>
 
+
+  <!-- Header -->
   <header class="masthead">
+
     <div class="container mast-grid">
-      <img class="mast-photo" src="headshot.jpg" alt="Portrait of Lubna Zahan Lamia" />
+
+      <img
+        class="mast-photo"
+        src="headshot.jpg"
+        alt="Portrait of Lubna Zahan Lamia"
+      />
+
       <div class="mast-text">
+
         <h1 class="mast-name">Lubna Zahan Lamia</h1>
-<p class="mast-tag">Computer Science Graduate | Human-AI Alignment and Natural Language Processing</p>
+
+        <p class="mast-tag">
+          PhD Student in Computer Science at Dartmouth College |
+          Natural Language Processing & Human-Centered AI
+        </p>
+
         <div class="mast-actions">
-          <a class="inline-btn" target="_blank" rel="noreferrer" href="https://scholar.google.com/citations?user=CjYkwz4AAAAJ&hl=en">Google Scholar</a>
-          <a class="inline-btn" target="_blank" rel="noreferrer" href="https://www.linkedin.com/in/lubna-zahan-lamia-2384b22a5/">LinkedIn</a>
+
+          <a
+            class="inline-btn"
+            target="_blank"
+            rel="noreferrer"
+            href="https://scholar.google.com/citations?user=CjYkwz4AAAAJ&hl=en"
+          >
+            Google Scholar
+          </a>
+
+          <a
+            class="inline-btn"
+            target="_blank"
+            rel="noreferrer"
+            href="https://www.linkedin.com/in/lubna-zahan-lamia-2384b22a5/"
+          >
+            LinkedIn
+          </a>
+
         </div>
+
       </div>
+
     </div>
+
     <div class="mast-bg" aria-hidden="true"></div>
+
   </header>
 
 
-
-
-<div class="watercolor-divider" aria-hidden="true"></div>
-
-<section id="about" class="container">
-  <h2>About</h2>
-  <p>
-    I am Lubna Zahan Lamia, currently a Research Assistant at the Cognitive Agents and Interaction Lab (CAIL), University of Dhaka. My research interests broadly span human–computer interaction and natural language processing, with an emphasis on understanding how AI systems—particularly large language models—generate, present, and mediate information in real-world contexts. In my recent work, I have examined model behavior related to meaning, framing, and sentiment, with the goal of better understanding how automated systems influence human interpretation and trust. More generally, I am interested in evaluation and analysis methods that improve transparency and interpretability in AI systems, and in contributing to the development of human-centered and responsible AI technologies across diverse application settings.
-  </p>
-</section>
-
-
-<div class="watercolor-divider" aria-hidden="true"></div>
-
-
-
-<section id="latest" class="container">
-
-  <h2>Latest Update</h2>
-  <p>
-
-    <strong>Feb 2026</strong> — 
-
-    Awarded the <strong>University of Dhaka Merit Scholarship</strong> based on academic performance in the B.Sc. in Computer Science and Engineering program.
-
-  </p>
-  
-  <p>
-
-    <strong>Jan 2026</strong> —
-
-    <em>FinBERT-BiLSTM: A Deep Learning Model for Predicting Volatile Cryptocurrency Market Prices Using Market Sentiment Dynamics</em>
-
-    has been <strong>accepted for publication</strong> in the journal
-
-    <em>Applied Intelligence</em> (Springer).
-
-  </p>
-
-<p> <strong>Nov 2025</strong> — Received the <strong> SAC Highlight Award</strong> for the paper <em>“Who Holds the Pen? Caricature and Perspective in LLM Retellings of History,”</em> at EMNLP 2025!. </p>
-
-
-
-</section>
-
-
-
-<div class="watercolor-divider" aria-hidden="true"></div>
-
-<section id="interests" class="container">
-
-
-  <h2>Research Interest</h2>
-<ul class="about-highlights">
-  <li>Natural Language Processing and Computational Linguistics</li>
-  <li>Human–AI Interaction and Collaboration</li>
-  <li>Bias, Ethics, and Human-Aligned Responsible AI</li>
-  <li>Narrative Framing and Perspective in Generative Text</li>
-  <li>Deep Learning Methods for Time Series Analysis and Contextual Evaluation</li>
-</ul>
-
-</section>
-
   <div class="watercolor-divider" aria-hidden="true"></div>
 
-<section id="education" class="container">
-  <h2>Education</h2>
-  <ul class="about-highlights">
-    <li><strong>B.Sc.</strong> — Department of Computer Science & Engineering, University of Dhaka</li>
-    <li><strong>H.S.C.</strong> — Science, Holy Cross College, Dhaka</li>
-  </ul>
-</section>
+
+  <!-- About -->
+  <section id="about" class="container">
+
+    <h2>About</h2>
+
+    <p>
+      I am Lubna Zahan Lamia, a PhD student in Computer Science at Dartmouth College.
+      My research interests broadly span natural language processing, human–AI interaction,
+      and responsible AI, with a particular interest in understanding how large language
+      models generate, present, and mediate information in real-world settings.
+      My recent work has examined model behavior related to meaning, framing, perspective,
+      and sentiment, with the goal of better understanding how AI-generated information
+      can influence human interpretation and trust. More broadly, I am interested in
+      developing evaluation and analysis methods that improve the transparency,
+      reliability, and human-centered design of AI systems.
+    </p>
+
+  </section>
 
 
   <div class="watercolor-divider" aria-hidden="true"></div>
 
-<section id="publications" class="container">
-  <h2>Publications and Presentations</h2>
-  <ul class="about-highlights">
-<li>
-  <strong>Conference</strong><br>
-  Lamia, L. Z., Hossain, M. F. B., & Khan, M. M. (2025).
-  <em>Who Holds the Pen? Caricature and Perspective in LLM Retellings of History.</em>
-  Conference on Empirical Methods in Natural Language Processing (EMNLP) 2025 — Long Paper, Main Conference, Oral Presentation; recipient of the SAC Highlight Award.<br>
-  <a href="https://aclanthology.org/2025.emnlp-main.996/" target="_blank">Paper Link (ACL Anthology)</a>
-</li>
 
-<li>
-  <strong>Journal</strong><br>
-  Hossain, M. F. B., Lamia, L. Z., & Khan, M. M. (2025).
-  <em>FinBERT-BiLSTM: A Deep Learning Model for Predicting Volatile Cryptocurrency Market Prices 
-  Using Market Sentiment Dynamics.</em>
-  Accepted for publication at <em>Applied Intelligence</em> (Springer) — Equal Contribution.<br>
-  <a href="https://arxiv.org/abs/2411.12748" target="_blank">Preprint (arXiv)</a>
-</li>
+  <!-- Latest Updates -->
+  <section id="latest" class="container">
 
+    <h2>Latest Updates</h2>
 
-<li>
-  <strong>Presentations</strong><br>
-  Oral Presentation: EMNLP 2025, Suzhou, China (Nov 5–9, 2025).<br>
-  Presented our paper, <em>“Who Holds the Pen? Caricature and Perspective in LLM Retellings of History”</em>, during the Oral Session: Ethics, Bias, and Fairness 1 at EMNLP 2025 (Hall A303, November 5, 16:30–18:00).
-</li>
+    <p>
+      <strong>Sep 2026</strong> —
+      Started my <strong>PhD in Computer Science at Dartmouth College</strong>.
+    </p>
 
-  </ul>
-</section>
-<div class="watercolor-divider" aria-hidden="true"></div>
+    <p>
+      <strong>Feb 2026</strong> —
+      Awarded the <strong>University of Dhaka Merit Scholarship</strong>
+      based on academic performance in the B.Sc. in Computer Science and Engineering program.
+    </p>
 
-<section id="awards" class="container">
-  <h2>Awards & Recognition</h2>
-  <ul class="about-highlights">
-    <li>
-  <strong>EMNLP 2025 — SAC Highlight Award</strong><br>
+    <p>
+      <strong>Jan 2026</strong> —
+      <em>
+        FinBERT-BiLSTM: A Deep Learning Model for Predicting Volatile Cryptocurrency
+        Market Prices Using Market Sentiment Dynamics
+      </em>
+      was <strong>accepted for publication</strong> in
+      <em>Applied Intelligence</em> (Springer).
+    </p>
 
-  Paper titled <em>“Who Holds the Pen? Caricature and Perspective in LLM Retellings of History.”</em>
+    <p>
+      <strong>Nov 2025</strong> —
+      Received the <strong>SAC Highlight Award</strong> for the paper
+      <em>
+        “Who Holds the Pen? Caricature and Perspective in LLM Retellings of History”
+      </em>
+      at EMNLP 2025.
+    </p>
 
-  Selected for the EMNLP 2025 Main Conference, Suzhou, China, and received the <strong>SAC Highlight Award, recognizing one of only 35 highlighted papers selected from 8,174 submissions</strong>.
+  </section>
 
-</li>
-    <li>
-      <strong>EMNLP 2025 Diversity & Inclusion (D&I) Grant</strong><br>
-      Received USD 1000 travel support under the EMNLP D&I initiative (airfare and accommodation coverage).
-    </li>
-    <li>
-      <strong>EMNLP 2025 Volunteership</strong><br>
-      Selected as an official in-person volunteer for the EMNLP 2025 Main Conference, Suzhou, China,
-      and granted a full registration waiver (USD 600), including ACL membership benefits.
-    </li>
-
-    <li>
-      <strong>Government Scholarships</strong><br>
-      Received merit-based Government Scholarships for academic performance in H.S.C., S.S.C., and J.S.C. examinations.
-    </li>
-    <li>
-      <strong>World Youth Leadership Conference (WYLC) 2025 — With Scholarship</strong><br>
-      Accepted for participation in WYLC 2025, Dubai, UAE, with a partial scholarship from Global Entrepreneurship Bootcamp INC. ( Not Pursued)
-  
-    </li>
-  </ul>
-</section>
-
-
-<div class="watercolor-divider" aria-hidden="true"></div>
-<section class="container">
-  <div class="button-row">
-    <a class="pill-btn" href="projects.html">Undergraduate Coursework Software Projects</a>
-    <a class="pill-btn" href="leadership.html">Co-curricular Activities</a>
-    <a class="pill-btn" href="hobbies.html">Hobbies</a>
-  </div>
-</section>
 
   <div class="watercolor-divider" aria-hidden="true"></div>
 
-<section id="contact" class="container">
-  <h2>Contact Me</h2>
-  <p>
-    Email: 
-    <a href="mailto:lubnazahan-2019417808@cs.du.ac.bd">lubnazahan-2019417808@cs.du.ac.bd</a> | 
-    <a href="mailto:lubnazlamia2020@gmail.com">lubnazlamia2020@gmail.com</a>
-  </p>
-</section>
 
-  <footer class="site-footer">
-    <div class="container footer-inner">
-      <small>© <span id="year"></span> Lubna Zahan Lamia</small>
+  <!-- Research Interests -->
+  <section id="interests" class="container">
+
+    <h2>Research Interests</h2>
+
+    <ul class="about-highlights">
+
+      <li>
+        Natural Language Processing and Computational Linguistics
+      </li>
+
+      <li>
+        Human–AI Interaction and Collaboration
+      </li>
+
+      <li>
+        Bias, Ethics, and Human-Aligned Responsible AI
+      </li>
+
+      <li>
+        Narrative Framing and Perspective in Generative Text
+      </li>
+
+      <li>
+        Deep Learning Methods for Time Series Analysis and Contextual Evaluation
+      </li>
+
+    </ul>
+
+  </section>
+
+
+  <div class="watercolor-divider" aria-hidden="true"></div>
+
+
+  <!-- Education -->
+  <section id="education" class="container">
+
+    <h2>Education</h2>
+
+    <ul class="about-highlights">
+
+      <li>
+        <strong>Ph.D. in Computer Science</strong> —
+        Dartmouth College
+        <br>
+        2026 – Present
+      </li>
+
+      <li>
+        <strong>M.S. in Computer Science and Engineering</strong> —
+        University of Dhaka
+      </li>
+
+      <li>
+        <strong>B.Sc. in Computer Science and Engineering</strong> —
+        University of Dhaka
+      </li>
+
+      <li>
+        <strong>H.S.C.</strong> —
+        Science, Holy Cross College, Dhaka
+      </li>
+
+    </ul>
+
+  </section>
+
+
+  <div class="watercolor-divider" aria-hidden="true"></div>
+
+
+  <!-- Publications -->
+  <section id="publications" class="container">
+
+    <h2>Publications and Presentations</h2>
+
+    <ul class="about-highlights">
+
+      <li>
+
+        <strong>Conference</strong>
+        <br>
+
+        Lamia, L. Z., Hossain, M. F. B., & Khan, M. M. (2025).
+
+        <em>
+          Who Holds the Pen? Caricature and Perspective in LLM Retellings of History.
+        </em>
+
+        Conference on Empirical Methods in Natural Language Processing
+        (EMNLP) 2025 — Long Paper, Main Conference, Oral Presentation;
+        recipient of the SAC Highlight Award.
+
+        <br>
+
+        <a
+          href="https://aclanthology.org/2025.emnlp-main.996/"
+          target="_blank"
+          rel="noreferrer"
+        >
+          Paper Link (ACL Anthology)
+        </a>
+
+      </li>
+
+
+      <li>
+
+        <strong>Journal</strong>
+        <br>
+
+        Hossain, M. F. B., Lamia, L. Z., & Khan, M. M. (2025).
+
+        <em>
+          FinBERT-BiLSTM: A Deep Learning Model for Predicting Volatile
+          Cryptocurrency Market Prices Using Market Sentiment Dynamics.
+        </em>
+
+        Accepted for publication in
+        <em>Applied Intelligence</em> (Springer) — Equal Contribution.
+
+        <br>
+
+        <a
+          href="https://arxiv.org/abs/2411.12748"
+          target="_blank"
+          rel="noreferrer"
+        >
+          Preprint (arXiv)
+        </a>
+
+      </li>
+
+
+      <li>
+
+        <strong>Presentation</strong>
+        <br>
+
+        Oral Presentation: EMNLP 2025, Suzhou, China
+        (November 5–9, 2025).
+
+        <br>
+
+        Presented our paper,
+        <em>
+          “Who Holds the Pen? Caricature and Perspective in LLM Retellings of History”
+        </em>,
+        during the Oral Session: Ethics, Bias, and Fairness 1 at EMNLP 2025
+        (Hall A303, November 5, 16:30–18:00).
+
+      </li>
+
+    </ul>
+
+  </section>
+
+
+  <div class="watercolor-divider" aria-hidden="true"></div>
+
+
+  <!-- Awards -->
+  <section id="awards" class="container">
+
+    <h2>Awards & Recognition</h2>
+
+    <ul class="about-highlights">
+
+      <li>
+
+        <strong>EMNLP 2025 — SAC Highlight Award</strong>
+        <br>
+
+        Paper titled
+        <em>
+          “Who Holds the Pen? Caricature and Perspective in LLM Retellings of History.”
+        </em>
+
+        Selected for the EMNLP 2025 Main Conference, Suzhou, China,
+        and received the
+        <strong>
+          SAC Highlight Award, recognizing one of only 35 highlighted papers
+          selected from 8,174 submissions
+        </strong>.
+
+      </li>
+
+
+      <li>
+
+        <strong>EMNLP 2025 Diversity & Inclusion (D&I) Grant</strong>
+        <br>
+
+        Received USD 1000 travel support under the EMNLP D&I initiative
+        for airfare and accommodation.
+
+      </li>
+
+
+      <li>
+
+        <strong>EMNLP 2025 Volunteership</strong>
+        <br>
+
+        Selected as an official in-person volunteer for the EMNLP 2025
+        Main Conference, Suzhou, China, and granted a full registration
+        waiver (USD 600), including ACL membership benefits.
+
+      </li>
+
+
+      <li>
+
+        <strong>University of Dhaka Merit Scholarship</strong>
+        <br>
+
+        Awarded based on academic performance in the B.Sc. in
+        Computer Science and Engineering program.
+
+      </li>
+
+
+      <li>
+
+        <strong>Government Scholarships</strong>
+        <br>
+
+        Received merit-based Government Scholarships for academic
+        performance in H.S.C., S.S.C., and J.S.C. examinations.
+
+      </li>
+
+
+      <li>
+
+        <strong>
+          World Youth Leadership Conference (WYLC) 2025 — With Scholarship
+        </strong>
+        <br>
+
+        Accepted for participation in WYLC 2025, Dubai, UAE, with a
+        partial scholarship from Global Entrepreneurship Bootcamp INC.
+        (Not Pursued)
+
+      </li>
+
+    </ul>
+
+  </section>
+
+
+  <div class="watercolor-divider" aria-hidden="true"></div>
+
+
+  <!-- Other Pages -->
+  <section class="container">
+
+    <div class="button-row">
+
+      <a class="pill-btn" href="projects.html">
+        Undergraduate Coursework Software Projects
+      </a>
+
+      <a class="pill-btn" href="leadership.html">
+        Co-curricular Activities
+      </a>
+
+      <a class="pill-btn" href="hobbies.html">
+        Hobbies
+      </a>
+
     </div>
+
+  </section>
+
+
+  <div class="watercolor-divider" aria-hidden="true"></div>
+
+
+  <!-- Contact -->
+  <section id="contact" class="container">
+
+    <h2>Contact Me</h2>
+
+    <p>
+
+      Email:
+
+      <a href="mailto:lubnazahan-2019417808@cs.du.ac.bd">
+        lubnazahan-2019417808@cs.du.ac.bd
+      </a>
+
+      |
+
+      <a href="mailto:lubnazlamia2020@gmail.com">
+        lubnazlamia2020@gmail.com
+      </a>
+
+    </p>
+
+  </section>
+
+
+  <!-- Footer -->
+  <footer class="site-footer">
+
+    <div class="container footer-inner">
+
+      <small>
+        © <span id="year"></span> Lubna Zahan Lamia
+      </small>
+
+    </div>
+
   </footer>
 
+
   <script src="script.js"></script>
+
 </body>
+
 </html>
